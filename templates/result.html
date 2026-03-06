@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoGG Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="panel hero">
+            <p class="eyebrow">Run Complete</p>
+            <h1>Submission summary</h1>
+            <p class="lede">{{ form_url }}</p>
+        </section>
+
+        <section class="panel result-panel">
+            <div class="stats">
+                <article>
+                    <span>Requested</span>
+                    <strong>{{ result.requested }}</strong>
+                </article>
+                <article>
+                    <span>Succeeded</span>
+                    <strong>{{ result.succeeded }}</strong>
+                </article>
+                <article>
+                    <span>Failed</span>
+                    <strong>{{ result.failed }}</strong>
+                </article>
+                <article>
+                    <span>Mode</span>
+                    <strong>{{ 'Headless' if headless else 'Headed' }}</strong>
+                </article>
+            </div>
+
+            <p class="runtime">Elapsed: {{ "%.2f"|format(result.duration_seconds) }}s</p>
+
+            {% if result.errors %}
+                <div class="error-log">
+                    <h2>Error log</h2>
+                    <ul>
+                        {% for error in result.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('ui.index') }}" class="link-button">Run Another Form</a>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "senior-architect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "03f75291acbd3934c4a1d8aa73b24357d74d848fa587bf5d7dc0a90e7437b5b7"
+    }
+  }
+}

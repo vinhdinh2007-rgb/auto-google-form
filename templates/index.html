@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoGG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="panel hero">
+            <p class="eyebrow">Google Forms Automation</p>
+            <h1>Randomized submissions with a Chrome-backed Flask UI.</h1>
+            <p class="lede">Enter a public Google Forms URL, pick a submission count, and run the automation with the random response strategy.</p>
+        </section>
+
+        <section class="panel form-panel">
+            {% if errors %}
+                <div class="alert" role="alert">
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{{ url_for('ui.submit') }}" class="form-grid">
+                <label>
+                    <span>Form URL</span>
+                    <input type="url" name="form_url" required value="{{ form_data.form_url if form_data else '' }}" placeholder="https://docs.google.com/forms/...">
+                </label>
+
+                <label>
+                    <span>Submission Count</span>
+                    <input type="number" name="count" min="1" required value="{{ form_data.count if form_data else 1 }}">
+                </label>
+
+                <label class="toggle">
+                    <input type="checkbox" name="headless" {% if form_data is not defined or form_data.headless %}checked{% endif %}>
+                    <span>Run Chrome headless</span>
+                </label>
+
+                <button type="submit">Start Run</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
