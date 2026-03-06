@@ -16,6 +16,18 @@ A Flask-based web application that automates Google Form submissions using Selen
 - **Templates**: Jinja2 HTML templates
 - **Production server**: Gunicorn
 
+## UI Design
+
+The UI uses an anime-themed "Hanabi/Sparkle" design with:
+- Dark fireworks wallpaper background (Unsplash image)
+- Floating anime character (Hanabi) on the left side (large screens)
+- Neo-brutalist main card with rose/pink color scheme, thick borders, pill-shaped elements
+- Floating decorative SVG icons (flame, star, ghost) with CSS animations
+- Nunito rounded font
+- Playful copy ("Let's play a game!", "Ignite the Fireworks!", etc.)
+- Reduced motion support via prefers-reduced-motion media query
+- Accessible decorative elements with aria-hidden
+
 ## Project Structure
 
 ```
@@ -28,8 +40,12 @@ autogg/
 │   ├── form_parser.py    # Google Form question type detection
 │   ├── routes.py         # Flask Blueprints and URL routing
 │   └── strategy.py       # Randomized answer generation
-├── static/               # Static assets (CSS)
+├── static/               # Static assets (CSS, images)
+│   ├── style.css         # Main stylesheet (anime theme)
+│   └── hanabi.png        # Anime character image
 ├── templates/            # Jinja2 HTML templates
+│   ├── index.html        # Main form page
+│   └── result.html       # Results display page
 ├── tests/                # pytest test suite
 ├── auto.py               # Entry point (Flask dev server)
 └── requirements.txt      # Python dependencies
