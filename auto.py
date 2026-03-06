@@ -5,4 +5,4 @@ app = create_app()
 
 if __name__ == "__main__":
     settings = app.config["APP_SETTINGS"]
-    app.run(host=settings.host, port=settings.port, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
