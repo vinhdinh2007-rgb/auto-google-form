@@ -22,11 +22,19 @@
             <svg viewBox="0 0 24 24" width="56" height="56" fill="currentColor" stroke="none"><path d="M12 2a9 9 0 0 0-9 9v11l3-3 3 3 3-3 3 3 3-3 3 3V11a9 9 0 0 0-9-9zm-2 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm4 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
         </div>
 
-        <div class="character-float" aria-hidden="true">
-            <img src="{{ url_for('static', filename='hanabi.png') }}" alt="">
-        </div>
+        <div class="layout-pair">
+            <div class="polaroid-frame" aria-hidden="true">
+                <div class="tape"></div>
+                <div class="corner-star top-left pink">&#x2605;</div>
+                <div class="corner-star top-right gold">&#x2605;</div>
+                <div class="corner-star bottom-left gold">&#x2605;</div>
+                <div class="corner-star bottom-right pink">&#x2605;</div>
+                <div class="polaroid-image-wrap">
+                    <img src="{{ url_for('static', filename='hanabi.png') }}" alt="">
+                </div>
+                <div class="polaroid-caption">~ Elation ~</div>
+            </div>
 
-        <div class="main-content">
             <div class="card">
                 <div class="card-header">
                     <div class="badge">
