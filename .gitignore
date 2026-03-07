@@ -1,0 +1,24 @@
+# Agent & AI related
+.agents/
+.agent/
+_agents/
+_agent/
+.gemini/
+skills-lock.json
+
+# Tests & Coverage
+tests/
+.pytest_cache/
+pytest-cache-*/
+.coverage
+htmlcov/
+pytest.ini
+
+# Python bytecode & Env
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+.venv/

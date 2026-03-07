@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python cache & test
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+pytest-cache-*
+.coverage
+htmlcov
+pytest.ini
+tests
+
+# Agent & AI
+.agents
+.agent
+_agents
+_agent
+.gemini
+skills-lock.json
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment
+.env
+.env.*
+venv
+env
+.venv
+.local
+.config
+
+# Misc
+*.md
+!README.md
+.replit
+replit.md
+attached_assets
+.selenium
+Redesign Google Form Tool UI
+profiles

@@ -3,12 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AutoGG: Automatically fill Google Forms with random data for testing. Drop the form link, pick a number, and watch the fireworks explode!">
     <title>AutoGG</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.1">
 </head>
 <body>
+    <div class="zoom-warning" id="zoom-warning" role="status" aria-live="polite">
+        <strong>Browser zoom looks low. Press Ctrl+0 to reset to 100%.</strong>
+        <button type="button" id="zoom-warning-dismiss">Dismiss</button>
+    </div>
     <div class="scene">
-        <div class="bg-wallpaper" style="background-image: url('https://images.unsplash.com/photo-1762852741238-fd05f01a9e7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080')"></div>
+        <div class="bg-wallpaper" aria-hidden="true"></div>
         <div class="bg-overlay-rose"></div>
         <div class="bg-gradient-overlay"></div>
 
@@ -23,24 +28,51 @@
         </div>
 
         <div class="layout-pair">
-            <div class="polaroid-frame" aria-hidden="true">
-                <div class="tape"></div>
-                <div class="corner-star top-left pink">&#x2605;</div>
-                <div class="corner-star top-right gold">&#x2605;</div>
-                <div class="corner-star bottom-left gold">&#x2605;</div>
-                <div class="corner-star bottom-right pink">&#x2605;</div>
+            <div class="polaroid-wrapper" aria-hidden="true">
+                <div class="polaroid-frame">
+                    <div class="tape"></div>
+                <div class="corner-star top-left pink">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.12 5.11a.56.56 0 0 0 .48.35l5.52.44c.5.04.7.66.32.98l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.38a.56.56 0 0 1-.84.61l-4.72-2.89a.56.56 0 0 0-.58 0l-4.72 2.89a.56.56 0 0 1-.84-.61l1.28-5.38a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.98l5.52-.44a.56.56 0 0 0 .48-.35z"/></svg>
+                </div>
+                <div class="corner-star top-right gold">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.12 5.11a.56.56 0 0 0 .48.35l5.52.44c.5.04.7.66.32.98l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.38a.56.56 0 0 1-.84.61l-4.72-2.89a.56.56 0 0 0-.58 0l-4.72 2.89a.56.56 0 0 1-.84-.61l1.28-5.38a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.98l5.52-.44a.56.56 0 0 0 .48-.35z"/></svg>
+                </div>
+                <div class="corner-star bottom-left gold">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.12 5.11a.56.56 0 0 0 .48.35l5.52.44c.5.04.7.66.32.98l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.38a.56.56 0 0 1-.84.61l-4.72-2.89a.56.56 0 0 0-.58 0l-4.72 2.89a.56.56 0 0 1-.84-.61l1.28-5.38a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.98l5.52-.44a.56.56 0 0 0 .48-.35z"/></svg>
+                </div>
+                <div class="corner-star bottom-right pink">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.12 5.11a.56.56 0 0 0 .48.35l5.52.44c.5.04.7.66.32.98l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.38a.56.56 0 0 1-.84.61l-4.72-2.89a.56.56 0 0 0-.58 0l-4.72 2.89a.56.56 0 0 1-.84-.61l1.28-5.38a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.98l5.52-.44a.56.56 0 0 0 .48-.35z"/></svg>
+                </div>
+
+                <!-- Sticker decorations -->
+                <div class="sticker sticker-heart" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <div class="sticker sticker-sparkle-1" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="none"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                </div>
+                <div class="sticker sticker-sparkle-2" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                </div>
+                <div class="sticker sticker-flower" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="none"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm0-18C9.24 4 7 6.24 7 9c0 1.77.87 3.35 2.2 4.32V16c0 .55.45 1 1 1h3.6c.55 0 1-.45 1-1v-2.68C16.13 12.35 17 10.77 17 9c0-2.76-2.24-5-5-5zm.5 9.5h-1v2h1v-2zm2.4-1.86l-.7.7C13.47 11.07 13 10.6 13 10V8h-2v2c0 .6-.47 1.07-1.2 1.34l-.7-.7-.71.71.7.7c-.63.58-1.09 1.33-1.09 2.2V15h2v-1.75c0-.56.28-1.05.7-1.34l.3.05h.3l.3-.05c.42.29.7.78.7 1.34V15h2v-.75c0-.87-.46-1.62-1.09-2.2l.7-.7-.71-.71z"/></svg>
+                </div>
+
                 <div class="polaroid-image-wrap">
-                    <img src="{{ url_for('static', filename='hanabi.png') }}" alt="">
+                    <img src="{{ url_for('static', filename='figma-hanabi.png') }}" alt="Hanabi character illustration">
                 </div>
                 <div class="polaroid-caption">~ Elation ~</div>
+                </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <div class="badge">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-500)"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 1.84l-.19.63a3.28 3.28 0 0 1-2.18 2.18l-.64.19a2.9 2.9 0 0 0-1.84 1.96L12.2 12l.75 2.24a2.9 2.9 0 0 0 1.84 1.96l.63.19c1.07.32 1.86 1.11 2.18 2.18l.19.64a2.9 2.9 0 0 0 1.96 1.84L22 22"/></svg>
+                        <!-- PartyPopper icon (left) -->
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-500);"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path fill="none" d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 1.84l-.19.63a3.28 3.28 0 0 1-2.18 2.18l-.64.19a2.9 2.9 0 0 0-1.84 1.96L12.2 12l.75 2.24a2.9 2.9 0 0 0 1.84 1.96l.63.19c1.07.32 1.86 1.11 2.18 2.18l.19.64a2.9 2.9 0 0 0 1.96 1.84L22 22"/></svg>
                         <span>Aha! Automation</span>
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-500)"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 1.84l-.19.63a3.28 3.28 0 0 1-2.18 2.18l-.64.19a2.9 2.9 0 0 0-1.84 1.96L12.2 12l.75 2.24a2.9 2.9 0 0 0 1.84 1.96l.63.19c1.07.32 1.86 1.11 2.18 2.18l.19.64a2.9 2.9 0 0 0 1.96 1.84L22 22"/></svg>
+                        <!-- PartyPopper icon (right) -->
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-500); transform: scaleX(-1);"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path fill="none" d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 1.84l-.19.63a3.28 3.28 0 0 1-2.18 2.18l-.64.19a2.9 2.9 0 0 0-1.84 1.96L12.2 12l.75 2.24a2.9 2.9 0 0 0 1.84 1.96l.63.19c1.07.32 1.86 1.11 2.18 2.18l.19.64a2.9 2.9 0 0 0 1.96 1.84L22 22"/></svg>
                     </div>
                     <h1>Let's play a game! <span class="bounce-emoji">&#x1F3AD;</span></h1>
                     <p>Drop the form link, pick a number, and watch the fireworks explode!</p>
@@ -54,11 +86,11 @@
                     </div>
                 {% endif %}
 
-                <form method="post" action="{{ url_for('ui.submit') }}" class="form-stack">
+                <form method="post" action="{{ url_for('ui.submit') }}" class="form-stack" id="autogg-form">
                     <div class="field-group">
                         <div class="field">
                             <label for="form-url">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 17 6-6-6-6"/><path d="M15 7l-6 6 6 6"/><path d="M17 3H7a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4z"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                 The Stage (Form URL)
                             </label>
                             <div class="input-wrap">
@@ -94,6 +126,7 @@
                                 <input type="text" id="preferred-name" name="preferred_name" value="{{ form_data.preferred_name if form_data else '' }}" placeholder="Used for name questions">
                             </div>
                         </div>
+
                     </div>
 
                     <div class="headless-row">
@@ -104,13 +137,57 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit">
-                        Ignite the Fireworks!
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M12 23c-3.866 0-7-3.134-7-7 0-3.134 3.5-7.5 5-10 .3-.5 1-.5 1.3 0 1.5 2.5 5 6.866 5 10 0 3.866-3.134 7-7 7zm-1-5c0 1.657 1.343 3 3 3s3-1.343 3-3c0-2-1.5-4.5-3-6.5C12.5 13.5 11 15 11 18z"/></svg>
+                    <button type="submit" class="btn-submit" id="btn-submit">
+                        <span class="btn-text">
+                            Ignite the Fireworks!
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M12 23c-3.866 0-7-3.134-7-7 0-3.134 3.5-7.5 5-10 .3-.5 1-.5 1.3 0 1.5 2.5 5 6.866 5 10 0 3.866-3.134 7-7 7zm-1-5c0 1.657 1.343 3 3 3s3-1.343 3-3c0-2-1.5-4.5-3-6.5C12.5 13.5 11 15 11 18z"/></svg>
+                        </span>
+                        <span class="btn-loading">
+                            <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                            Starting the show...
+                        </span>
                     </button>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+        (function() {
+            /* Zoom warning */
+            var warning = document.getElementById("zoom-warning");
+            var dismissButton = document.getElementById("zoom-warning-dismiss");
+            if (warning && dismissButton) {
+                function getZoomSignal() {
+                    if (window.visualViewport && typeof window.visualViewport.scale === "number") {
+                        return window.visualViewport.scale;
+                    }
+                    return window.devicePixelRatio || 1;
+                }
+
+                function updateWarning() {
+                    var zoomSignal = getZoomSignal();
+                    var shouldWarn = zoomSignal < 0.75;
+                    warning.classList.toggle("is-visible", shouldWarn);
+                }
+
+                dismissButton.addEventListener("click", function() {
+                    warning.classList.remove("is-visible");
+                });
+
+                updateWarning();
+                window.addEventListener("resize", updateWarning);
+            }
+
+            /* Submit button loading state */
+            var form = document.getElementById("autogg-form");
+            var btn = document.getElementById("btn-submit");
+            if (form && btn) {
+                form.addEventListener("submit", function() {
+                    btn.classList.add("is-loading");
+                    btn.disabled = true;
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

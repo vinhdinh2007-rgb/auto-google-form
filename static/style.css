@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
     --bg: #0f172a;
@@ -14,6 +14,7 @@
     --rose-400: #fb7185;
     --rose-500: #f43f5e;
     --rose-600: #e11d48;
+    --rose-700: #be123c;
     --rose-900: #881337;
     --rose-950: #4c0519;
     --amber-200: #fde68a;
@@ -36,7 +37,7 @@
 
 body {
     min-height: 100vh;
-    font-family: "Nunito", sans-serif;
+    font-family: "Nunito", "M PLUS Rounded 1c", sans-serif;
     color: var(--text);
     background: var(--bg);
     overflow-x: hidden;
@@ -54,18 +55,36 @@ body {
 
 .bg-wallpaper {
     position: absolute;
-    inset: -80px;
+    inset: -5rem;
     z-index: 0;
+    background-image: url("https://images.unsplash.com/photo-1762852741238-fd05f01a9e7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpcmV3b3JrcyUyMHNreXxlbnwxfHx8fDE3NzI4MjIxMTZ8MA&ixlib=rb-4.1.0&q=80&w=1080");
     background-size: cover;
     background-position: center;
     opacity: 0.8;
-    animation: bg-drift 25s linear infinite;
+    transform: scale(1);
+    animation: bg-pan 28s ease-in-out infinite alternate;
+}
+
+.bg-wallpaper::before,
+.bg-wallpaper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.bg-wallpaper::before {
+    background: transparent;
+    animation: none;
+}
+
+.bg-wallpaper::after {
+    background: transparent;
 }
 
 .bg-overlay-rose {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     background: rgba(76, 5, 25, 0.30);
     backdrop-filter: blur(2px);
 }
@@ -73,12 +92,14 @@ body {
 .bg-gradient-overlay {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     background: linear-gradient(to top,
         rgba(15, 23, 42, 0.80) 0%,
         transparent 50%,
         rgba(76, 5, 25, 0.40) 100%);
 }
+
+/* ── Floating decorative icons ── */
 
 .floating-icon {
     position: absolute;
@@ -87,19 +108,20 @@ body {
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
     pointer-events: none;
+    display: none;
 }
 
 .floating-icon.flame {
-    top: 15%;
-    left: 10%;
+    top: -5%;
+    left: 45%;
     color: var(--amber-300);
     filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));
     animation: float-up 5s ease-in-out infinite;
 }
 
 .floating-icon.star {
-    top: 20%;
-    right: 15%;
+    top: 10%;
+    right: 5%;
     color: var(--amber-200);
     filter: drop-shadow(0 0 12px rgba(253, 230, 138, 0.8));
     animation: pulse-scale 4s ease-in-out infinite;
@@ -107,13 +129,15 @@ body {
 }
 
 .floating-icon.ghost {
-    bottom: 20%;
-    right: 10%;
+    bottom: 5%;
+    right: -5%;
     color: var(--rose-400);
     filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.8));
     animation: float-down 6s ease-in-out infinite;
     animation-delay: 1s;
 }
+
+/* ── Layout ── */
 
 .layout-pair {
     position: relative;
@@ -121,67 +145,82 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    margin-left: -2rem;
+    gap: 3rem;
+    margin-left: 0;
+    width: min(100%, 920px);
     animation: card-enter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.polaroid-frame {
+/* ── Polaroid frame ── */
+
+.polaroid-wrapper {
     display: none;
-    position: relative;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 1.25rem;
-    padding-bottom: 1rem;
-    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.25);
-    transform: rotate(-3deg);
     flex-shrink: 0;
-    width: 320px;
-    margin-right: -40px;
+    width: clamp(20rem, 25vw, 24rem);
+    min-width: 250px;
+    margin-right: 0;
     z-index: 1;
-    animation: frame-bob 6s ease-in-out infinite;
+    animation: polaroid-enter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.polaroid-frame {
+    position: relative;
+    background: #ffffff;
+    backdrop-filter: blur(20px);
+    border: 6px solid var(--rose-100);
+    border-radius: 2rem;
+    padding: 1.25rem;
+    padding-bottom: 1.5rem;
+    box-shadow: 0 20px 60px -15px rgba(225, 29, 72, 0.6);
+    transform: rotate(-6deg);
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .polaroid-frame .tape {
     position: absolute;
-    top: -14px;
+    top: -1rem;
     left: 50%;
-    transform: translateX(-50%) rotate(2deg);
-    width: 80px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    transform: translateX(-50%) rotate(3deg);
+    width: 8rem;
+    height: 3rem;
+    background: rgba(254, 205, 211, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.125rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     z-index: 5;
 }
 
 .polaroid-frame .corner-star {
     position: absolute;
-    font-size: 1.25rem;
     z-index: 5;
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.15));
 }
 
+.corner-star svg {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
 .corner-star.top-left {
-    top: -8px;
-    left: -8px;
+    top: 0.75rem;
+    left: 0.75rem;
 }
 
 .corner-star.top-right {
-    top: -8px;
-    right: -8px;
+    top: 0.75rem;
+    right: 0.75rem;
 }
 
 .corner-star.bottom-left {
-    bottom: 36px;
-    left: -8px;
+    bottom: 0.75rem;
+    left: 0.75rem;
 }
 
 .corner-star.bottom-right {
-    bottom: 36px;
-    right: -8px;
+    bottom: 0.75rem;
+    right: 0.75rem;
 }
 
 .corner-star.pink {
@@ -193,71 +232,186 @@ body {
 }
 
 .polaroid-image-wrap {
-    border: 3px dashed var(--rose-300);
-    border-radius: 16px;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    border: 4px dashed var(--rose-200);
+    border-radius: 1.5rem;
     overflow: hidden;
     aspect-ratio: 3 / 4;
+    background: var(--rose-50);
+    box-shadow: inset 0 2px 16px rgba(0, 0, 0, 0.08);
 }
 
 .polaroid-image-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     display: block;
+    transform: scale(1);
+    transform-origin: center;
+    transition: transform 700ms ease, filter 240ms ease;
 }
 
 .polaroid-caption {
     text-align: center;
-    margin-top: 0.75rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--rose-400);
     font-style: italic;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.35);
 }
+
+.polaroid-frame:hover {
+    transform: rotate(-2deg) scale(1.02);
+    box-shadow: 0 24px 64px -15px rgba(225, 29, 72, 0.62);
+}
+
+.polaroid-frame:hover .polaroid-image-wrap img {
+    transform: scale(1.05);
+    filter: saturate(1.05);
+}
+
+/* ── Sticker decorations around polaroid ── */
+
+.sticker {
+    position: absolute;
+    z-index: 10;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+}
+
+.sticker svg {
+    display: block;
+}
+
+.sticker-heart {
+    top: -1.5rem;
+    right: -1rem;
+    color: var(--rose-400);
+    animation: sticker-float 3s ease-in-out infinite;
+}
+
+.sticker-sparkle-1 {
+    bottom: 2rem;
+    left: -1.5rem;
+    color: var(--amber-300);
+    animation: sticker-twinkle 2.5s ease-in-out infinite;
+    animation-delay: 0.3s;
+}
+
+.sticker-sparkle-2 {
+    top: 3rem;
+    right: -1.8rem;
+    color: var(--rose-300);
+    animation: sticker-twinkle 3s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+.sticker-flower {
+    bottom: -1rem;
+    left: 2rem;
+    color: var(--pink-400);
+    animation: sticker-float 3.5s ease-in-out infinite;
+    animation-delay: 0.6s;
+}
+
+/* ── Card ── */
 
 .card {
     background: var(--card-bg);
-    backdrop-filter: blur(40px);
-    border: 4px solid var(--card-border);
+    backdrop-filter: blur(24px);
+    border: 4px solid rgba(254, 205, 211, 0.5);
     border-bottom-width: 8px;
-    border-bottom-color: var(--card-border-bottom);
-    padding: 2rem 2.5rem;
+    border-bottom-color: rgba(253, 164, 175, 0.8);
+    padding: 1.5rem 2rem;
     border-radius: 40px;
     box-shadow: var(--shadow-card);
     width: 100%;
-    max-width: 550px;
+    max-width: 500px;
+    min-width: 320px;
+    flex: 1 1 500px;
     position: relative;
     z-index: 2;
 }
+
+/* ── Zoom warning ── */
+
+.zoom-warning {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: min(92vw, 540px);
+    padding: 0.85rem 1rem;
+    border: 2px solid rgba(253, 164, 175, 0.7);
+    border-radius: 999px;
+    background: rgba(255, 241, 242, 0.96);
+    color: var(--rose-900);
+    box-shadow: 0 10px 30px rgba(76, 5, 25, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.zoom-warning.is-visible {
+    display: inline-flex;
+}
+
+.zoom-warning strong {
+    font-size: 0.95rem;
+}
+
+.zoom-warning button {
+    border: 0;
+    background: transparent;
+    color: var(--rose-600);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* ── Badge ── */
 
 .badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     background: var(--rose-100);
-    padding: 0.5rem 1rem;
+    padding: 0.375rem 0.875rem;
     border-radius: 999px;
     border: 2px solid var(--rose-200);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .badge span {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--rose-600);
 }
 
+.badge svg {
+    color: var(--rose-500);
+    flex-shrink: 0;
+}
+
+/* ── Card header ── */
+
 .card-header {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 
 .card-header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
     font-weight: 800;
     color: var(--text);
     margin-bottom: 1rem;
@@ -271,7 +425,7 @@ body {
 }
 
 .card-header p {
-    font-size: 1rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     font-weight: 500;
     max-width: 400px;
@@ -279,16 +433,18 @@ body {
     line-height: 1.6;
 }
 
+/* ── Form ── */
+
 .form-stack {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .field-group {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
 .field label {
@@ -297,7 +453,7 @@ body {
     gap: 0.5rem;
     margin-left: 0.5rem;
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 700;
     color: var(--rose-950);
 }
@@ -316,76 +472,118 @@ body {
 
 .input-wrap .input-icon {
     position: absolute;
-    left: 1.25rem;
-    color: var(--indigo-300);
+    left: 1rem;
+    color: var(--rose-300);
     display: flex;
     align-items: center;
     transition: color 0.2s;
     pointer-events: none;
+    z-index: 1;
 }
 
 .input-wrap:focus-within .input-icon {
-    color: var(--pink-400);
+    color: var(--rose-500);
 }
 
 .input-wrap .input-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .input-wrap input {
     width: 100%;
-    height: 3.5rem;
-    border: 3px solid var(--indigo-200);
+    height: 2.75rem;
+    border: 3px solid var(--rose-200);
     border-radius: 999px;
-    padding: 0.75rem 1.25rem 0.75rem 3.5rem;
+    padding: 0.5rem 1rem 0.5rem 2.75rem;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    color: var(--indigo-900);
-    background: white;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     outline: none;
 }
 
 .input-wrap input::placeholder {
-    color: var(--indigo-300);
+    color: var(--rose-300);
 }
 
 .input-wrap input:hover {
-    border-color: var(--indigo-300);
+    border-color: var(--rose-400);
 }
 
 .input-wrap input:focus {
-    border-color: var(--pink-400);
-    box-shadow: 0 0 0 4px var(--pink-100);
+    border-color: var(--rose-500);
+    box-shadow: 0 0 0 4px rgba(254, 205, 211, 0.5);
 }
+
+/* ── Focus outlines ── */
+
+.zoom-warning button:focus-visible,
+.headless-row input[type="checkbox"]:focus-visible,
+.btn-submit:focus-visible,
+.link-button:focus-visible {
+    outline: 3px solid rgba(244, 114, 182, 0.85);
+    outline-offset: 3px;
+}
+
+/* ── Headless row ── */
 
 .headless-row {
     display: flex;
     align-items: center;
     gap: 1rem;
     background: rgba(255, 241, 242, 0.7);
-    padding: 1rem;
-    border-radius: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1.25rem;
     border: 2px solid var(--rose-100);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .headless-row input[type="checkbox"] {
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 10px;
-    border: 3px solid var(--indigo-200);
-    background: white;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 6px;
+    border: 2px solid var(--rose-300);
+    background: rgba(255, 255, 255, 0.9);
     cursor: pointer;
-    accent-color: var(--pink-400);
     flex-shrink: 0;
+    box-shadow: 0 2px 0 0 var(--rose-300);
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.headless-row input[type="checkbox"]::after {
+    content: "";
+    width: 0.3rem;
+    height: 0.6rem;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    transform: rotate(45deg) scale(0);
+    transform-origin: center;
+    transition: transform 0.15s ease;
+}
+
+.headless-row input[type="checkbox"]:checked {
+    background: var(--rose-500);
+    border-color: var(--rose-500);
+    box-shadow: 0 2px 0 0 var(--rose-600);
+}
+
+.headless-row input[type="checkbox"]:checked::after {
+    border-right-color: #ffffff;
+    border-bottom-color: #ffffff;
+    transform: rotate(45deg) scale(1);
 }
 
 .headless-row .headless-label {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 700;
     color: var(--rose-900);
     cursor: pointer;
@@ -394,43 +592,49 @@ body {
 
 .headless-row .chrome-badge {
     background: white;
-    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 999px;
     color: var(--amber-500);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .headless-row .chrome-badge svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
 }
+
+/* ── Submit button ── */
 
 .btn-submit {
     width: 100%;
-    height: 4rem;
-    border: 3px solid var(--pink-400);
+    height: 3.5rem;
+    border: 3px solid var(--rose-500);
     border-bottom-width: 6px;
     border-radius: 999px;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     font-family: inherit;
-    font-size: 1.2rem;
+    font-size: 1.125rem;
     font-weight: 700;
-    color: var(--pink-400);
-    background: var(--pink-100);
+    color: var(--rose-700);
+    background: var(--rose-50);
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, border-bottom-width 0.1s;
-    box-shadow: 0 6px 0 0 var(--pink-300);
+    transition: transform 0.15s, box-shadow 0.15s, border-bottom-width 0.1s, background-color 0.3s;
+    box-shadow: 0 6px 0 0 var(--rose-600);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 0 0 var(--pink-300);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 0 var(--rose-600);
 }
 
 .btn-submit:active {
@@ -442,12 +646,48 @@ body {
 .btn-submit:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
 }
 
 .btn-submit svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
+
+/* Loading state */
+.btn-submit.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+    background: var(--rose-100);
+}
+
+.btn-submit .btn-text,
+.btn-submit .btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-submit .btn-loading {
+    display: none;
+}
+
+.btn-submit.is-loading .btn-text {
+    display: none;
+}
+
+.btn-submit.is-loading .btn-loading {
+    display: flex;
+}
+
+.btn-submit .spinner-icon {
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+/* ── Alert ── */
 
 .alert {
     border-radius: 1.25rem;
@@ -462,6 +702,8 @@ body {
 .alert p {
     margin: 0.25rem 0;
 }
+
+/* ── Result page stats grid ── */
 
 .stats-grid {
     display: grid;
@@ -530,24 +772,24 @@ body {
     gap: 0.5rem;
     width: 100%;
     height: 3.5rem;
-    border: 3px solid var(--pink-400);
+    border: 3px solid var(--rose-500);
     border-bottom-width: 6px;
     border-radius: 999px;
     padding: 0 2rem;
     font-family: inherit;
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--pink-400);
-    background: var(--pink-100);
+    color: var(--rose-700);
+    background: var(--rose-50);
     cursor: pointer;
     text-decoration: none;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 6px 0 0 var(--pink-300);
+    box-shadow: 0 6px 0 0 var(--rose-600);
 }
 
 .link-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 0 0 var(--pink-300);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 0 var(--rose-600);
 }
 
 .link-button:active {
@@ -555,12 +797,23 @@ body {
     box-shadow: none;
 }
 
-@keyframes bg-drift {
-    0% { transform: scale(1) rotate(0deg); }
-    25% { transform: scale(1.025) rotate(0.25deg); }
-    50% { transform: scale(1.05) rotate(0deg); }
-    75% { transform: scale(1.025) rotate(-0.25deg); }
-    100% { transform: scale(1) rotate(0deg); }
+/* ═══════════════════════════════════
+   Keyframes
+   ═══════════════════════════════════ */
+
+@keyframes bg-pan {
+    0% {
+        background-position: center;
+        transform: scale(1);
+    }
+    50% {
+        background-position: center;
+        transform: scale(1.05) rotate(0.5deg);
+    }
+    100% {
+        background-position: center;
+        transform: scale(1) rotate(0deg);
+    }
 }
 
 @keyframes float-up {
@@ -578,9 +831,15 @@ body {
     50% { transform: scale(1.2) rotate(10deg); }
 }
 
-@keyframes frame-bob {
-    0%, 100% { transform: rotate(-3deg) translateY(0); }
-    50% { transform: rotate(-3deg) translateY(-10px); }
+@keyframes polaroid-enter {
+    from {
+        opacity: 0;
+        transform: translateX(-50px) rotate(-4deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) rotate(0deg);
+    }
 }
 
 @keyframes card-enter {
@@ -599,18 +858,39 @@ body {
     50% { transform: translateY(-8px); }
 }
 
-@media (min-width: 900px) {
-    .polaroid-frame {
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes sticker-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(8deg); }
+}
+
+@keyframes sticker-twinkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
+}
+
+/* ═══════════════════════════════════
+   Responsive breakpoints
+   ═══════════════════════════════════ */
+
+@media (min-width: 1024px) {
+    .polaroid-wrapper {
         display: block;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .bg-wallpaper,
+    .bg-wallpaper::before,
     .floating-icon,
-    .polaroid-frame,
+    .polaroid-wrapper,
     .bounce-emoji,
-    .layout-pair {
+    .layout-pair,
+    .sticker {
         animation: none !important;
     }
 
@@ -621,11 +901,42 @@ body {
     .layout-pair {
         opacity: 1;
     }
+
+    .bg-wallpaper {
+        transform: scale(1);
+        background-position: center;
+    }
+
+    .polaroid-frame:hover .polaroid-image-wrap img {
+        transform: none;
+    }
+
+    .polaroid-frame:hover {
+        transform: rotate(-6deg);
+    }
 }
 
-@media (max-width: 899px) {
+@media (max-width: 1023px) {
     .layout-pair {
         margin-left: 0;
+        width: 100%;
+    }
+}
+
+@media (min-width: 640px) {
+    .floating-icon.flame,
+    .floating-icon.ghost {
+        display: block;
+    }
+
+    .card {
+        padding: 2.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .floating-icon.star {
+        display: block;
     }
 }
 
@@ -633,10 +944,16 @@ body {
     .card {
         padding: 1.5rem;
         border-radius: 28px;
+        min-width: 0;
     }
 
     .floating-icon {
         display: none;
+    }
+
+    .zoom-warning {
+        border-radius: 24px;
+        padding: 0.85rem;
     }
 
     .input-wrap input {
