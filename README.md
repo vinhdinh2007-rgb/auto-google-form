@@ -154,3 +154,5 @@ autogg/
 - Submission orchestration is handled in `app/form_filler.py`
 - Random answer generation is handled in `app/strategy.py`
 
+## Testing Host
+https://auto-google-form.replit.app/
