@@ -4,7 +4,7 @@ from selenium.common.exceptions import ElementClickInterceptedException
 
 from app.config import AppConfig
 from app.form_filler import FormFiller
-from app.form_parser import GridRow, Question, QuestionType
+from app.form_parser import GridRow, ParsedPage, Question, QuestionType
 from tests.conftest import FakeDriver, FakeElement
 
 
@@ -45,6 +45,12 @@ class StubParser:
             ),
         ]
 
+    def parse_page(self, driver, page_index=0):
+        return ParsedPage(
+            questions=self.parse_current_page(driver, page_index=page_index),
+            containers=self.wait_for_question_containers(driver),
+        )
+
     def wait_for_question_containers(self, driver):
         return [self._container["text"], self._container["checkbox"], self._container["grid"]]
 
@@ -77,9 +83,9 @@ class StubParser:
 
 
 class StubStrategy:
-    def choose_answer(self, question):
+    def choose_answer(self, question, preferred_name=None):
         if question.type == QuestionType.SHORT_TEXT:
-            return "lorem ipsum"
+            return preferred_name or "lorem ipsum"
         if question.type == QuestionType.CHECKBOX:
             return [0, 2]
         if question.type == QuestionType.GRID:
@@ -106,12 +112,12 @@ def test_form_filler_populates_questions_and_submits():
         strategy=StubStrategy(),
     )
 
-    result = filler.fill_and_submit("https://docs.google.com/forms/d/e/test/viewform", 1)
+    result = filler.fill_and_submit("https://docs.google.com/forms/d/e/test/viewform", 1, preferred_name="Vinh")
 
     assert result.succeeded == 1
     assert result.failed == 0
     assert text_input.cleared is True
-    assert text_input.sent_keys == ["lorem ipsum"]
+    assert text_input.sent_keys == ["Vinh"]
     assert checkbox_options[0].clicked is True
     assert checkbox_options[2].clicked is True
     assert grid_options[1].clicked is True
@@ -158,6 +164,9 @@ class SubmitOnlyParser:
 
     def parse_current_page(self, driver, page_index=0):
         return []
+
+    def parse_page(self, driver, page_index=0):
+        return ParsedPage(questions=[], containers=[])
 
     def wait_for_question_containers(self, driver):
         return []

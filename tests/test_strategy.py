@@ -56,3 +56,21 @@ def test_random_strategy_rejects_empty_single_choice():
 
     with pytest.raises(ValueError, match="empty option list"):
         strategy.choose_answer(question)
+
+
+def test_random_strategy_uses_preferred_name_for_name_prompt():
+    strategy = RandomStrategy(seed=7)
+    question = Question(identifier="q8", prompt="What is your name?", type=QuestionType.SHORT_TEXT)
+
+    answer = strategy.choose_answer(question, preferred_name="Vinh")
+
+    assert answer == "Vinh"
+
+
+def test_random_strategy_keeps_random_text_for_non_name_prompt():
+    strategy = RandomStrategy(seed=7)
+    question = Question(identifier="q9", prompt="What is your favorite color?", type=QuestionType.SHORT_TEXT)
+
+    answer = strategy.choose_answer(question, preferred_name="Vinh")
+
+    assert answer != "Vinh"

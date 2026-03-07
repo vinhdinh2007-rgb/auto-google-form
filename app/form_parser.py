@@ -40,6 +40,12 @@ class Question:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class ParsedPage:
+    questions: list[Question]
+    containers: list[Any]
+
+
 class FormParser:
     QUESTION_SELECTORS = [
         '[data-question-container="true"]',
@@ -105,7 +111,8 @@ class FormParser:
         questions: list[Question] = []
         page_index = 0
         while True:
-            questions.extend(self.parse_current_page(driver, page_index=page_index))
+            parsed_page = self.parse_page(driver, page_index=page_index)
+            questions.extend(parsed_page.questions)
             next_button = self.find_next_button(driver)
             if next_button is None:
                 break
@@ -113,24 +120,31 @@ class FormParser:
             page_index += 1
         return questions
 
-    def parse_current_page(self, driver: WebDriver, page_index: int = 0) -> list[Question]:
+    def parse_page(self, driver: WebDriver, page_index: int = 0) -> ParsedPage:
         containers = self.wait_for_question_containers(driver)
-        return [
+        questions = [
             self._parse_question(container, order=index, page_index=page_index)
             for index, container in enumerate(containers)
         ]
+        return ParsedPage(questions=questions, containers=containers)
+
+    def parse_current_page(self, driver: WebDriver, page_index: int = 0) -> list[Question]:
+        return self.parse_page(driver, page_index=page_index).questions
 
     def wait_for_question_containers(self, driver: WebDriver):
         wait = WebDriverWait(driver, self.config.wait_timeout)
 
         def _locate(active_driver: WebDriver):
+            candidate_sets = []
             for selector in self.QUESTION_SELECTORS:
                 elements = active_driver.find_elements(By.CSS_SELECTOR, selector)
                 if selector == 'div[role="listitem"]':
                     elements = self._filter_top_level_list_items(elements)
                 if elements:
-                    return elements
-            return False
+                    candidate_sets.append(elements)
+            if not candidate_sets:
+                return False
+            return max(candidate_sets, key=self._score_container_set)
 
         try:
             return wait.until(_locate)
@@ -300,6 +314,25 @@ class FormParser:
             if elements:
                 return elements[0]
         return None
+
+    def _score_container_set(self, elements) -> tuple[int, int]:
+        answerable_count = sum(1 for element in elements if self._looks_like_question_container(element))
+        return (answerable_count, -len(elements))
+
+    def _looks_like_question_container(self, element) -> bool:
+        if self.find_grid_rows(element):
+            return True
+        if self.find_textareas(element):
+            return True
+        if self.find_text_inputs(element):
+            return True
+        if self.find_checkbox_options(element):
+            return True
+        if self.find_dropdowns(element):
+            return True
+        if self.find_radio_options(element):
+            return True
+        return False
 
     def _filter_top_level_list_items(self, elements):
         filtered = []

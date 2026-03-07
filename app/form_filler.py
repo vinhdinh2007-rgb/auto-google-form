@@ -45,14 +45,18 @@ class FormFiller:
         self.parser = parser or FormParser(config)
         self.strategy = strategy or RandomStrategy()
 
-    def fill_and_submit(self, url: str, count: int) -> FillResult:
+    def fill_and_submit(self, url: str, count: int, preferred_name: str | None = None) -> FillResult:
         started_at = perf_counter()
         result = FillResult(requested=count)
         workers = min(self.config.max_workers, count) if count > 0 else 1
         chunks = self._build_chunks(count, workers)
 
         with ThreadPoolExecutor(max_workers=workers) as executor:
-            futures = [executor.submit(self._process_chunk, url, chunk) for chunk in chunks if chunk]
+            futures = [
+                executor.submit(self._process_chunk, url, chunk, preferred_name)
+                for chunk in chunks
+                if chunk
+            ]
             for future in as_completed(futures):
                 chunk_result = future.result()
                 result.succeeded += chunk_result.succeeded
@@ -68,12 +72,12 @@ class FormFiller:
             chunks[(submission_id - 1) % len(chunks)].append(submission_id)
         return chunks
 
-    def _process_chunk(self, url: str, submission_ids: list[int]) -> FillResult:
+    def _process_chunk(self, url: str, submission_ids: list[int], preferred_name: str | None) -> FillResult:
         result = FillResult(requested=len(submission_ids))
         with self.browser_manager_cls(self.config) as driver:
             for submission_id in submission_ids:
                 try:
-                    self._submit_once(driver, url, submission_id)
+                    self._submit_once(driver, url, submission_id, preferred_name)
                     result.succeeded += 1
                 except Exception as exc:
                     result.failed += 1
@@ -82,39 +86,38 @@ class FormFiller:
                     logger.exception(message)
         return result
 
-    def _submit_once(self, driver, url: str, submission_id: int) -> None:
+    def _submit_once(
+        self,
+        driver,
+        url: str,
+        submission_id: int,
+        preferred_name: str | None,
+    ) -> None:
         if self.config.enable_profiling:
             profiler = cProfile.Profile()
             profiler.enable()
             try:
-                self._submit_once_core(driver, url)
+                self._submit_once_core(driver, url, preferred_name)
             finally:
                 profiler.disable()
                 self._log_profile(submission_id, profiler)
         else:
-            self._submit_once_core(driver, url)
+            self._submit_once_core(driver, url, preferred_name)
 
-    def _submit_once_core(self, driver, url: str) -> None:
+    def _submit_once_core(self, driver, url: str, preferred_name: str | None) -> None:
         driver.get(url)
         page_index = 0
         while True:
-            questions = self.parser.parse_current_page(driver, page_index=page_index)
-            containers = self.parser.wait_for_question_containers(driver)
-            for question, container in zip(questions, containers):
-                answer = self.strategy.choose_answer(question)
+            parsed_page = self.parser.parse_page(driver, page_index=page_index)
+            for question, container in zip(parsed_page.questions, parsed_page.containers):
+                answer = self.strategy.choose_answer(question, preferred_name=preferred_name)
                 self._apply_answer(container, question, answer)
 
-            next_button = self.parser.find_next_button(driver)
-            submit_button = self.parser.find_submit_button(driver)
-            if next_button is not None and submit_button is None:
-                self._click_element(driver, next_button)
+            if self._advance_to_next_page(driver):
                 page_index += 1
                 continue
-            if submit_button is not None:
-                self._click_element(driver, submit_button)
-                self._verify_submission_completed(driver)
-                return
-            raise RuntimeError("No next or submit button found after answering the form")
+            self._submit_current_page(driver)
+            return
 
     def _apply_answer(self, container, question: Question, answer) -> None:
         if question.type in {QuestionType.RADIO, QuestionType.LINEAR_SCALE}:
@@ -164,6 +167,21 @@ class FormFiller:
         stats = pstats.Stats(profiler, stream=stats_stream).sort_stats("cumtime")
         stats.print_stats(10)
         logger.info("Submission %s profile:\n%s", submission_id, stats_stream.getvalue())
+
+    def _advance_to_next_page(self, driver) -> bool:
+        next_button = self.parser.find_next_button(driver)
+        submit_button = self.parser.find_submit_button(driver)
+        if next_button is None or submit_button is not None:
+            return False
+        self._click_element(driver, next_button)
+        return True
+
+    def _submit_current_page(self, driver) -> None:
+        submit_button = self.parser.find_submit_button(driver)
+        if submit_button is None:
+            raise RuntimeError("No next or submit button found after answering the form")
+        self._click_element(driver, submit_button)
+        self._verify_submission_completed(driver)
 
     def _verify_submission_completed(self, driver) -> None:
         def _submission_visible(active_driver):

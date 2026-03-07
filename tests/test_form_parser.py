@@ -106,6 +106,30 @@ def test_form_parser_prefers_top_level_question_containers():
     assert containers == [top_level]
 
 
+def test_form_parser_uses_most_complete_container_match():
+    parser = FormParser(AppConfig(wait_timeout=1))
+    partial_matches = [
+        build_question("radio", "Radio 1", [build_option("Yes"), build_option("No")]),
+        build_question("radio", "Radio 2", [build_option("Yes"), build_option("No")]),
+    ]
+    complete_matches = [
+        build_question("radio", "Radio 1", [build_option("Yes"), build_option("No")]),
+        build_question("radio", "Radio 2", [build_option("Yes"), build_option("No")]),
+        build_question("short_text", "Name"),
+        build_question("long_text", "Details"),
+    ]
+    driver = FakeDriver(
+        selectors={
+            (By.CSS_SELECTOR, ".Qr7Oae"): partial_matches,
+            (By.CSS_SELECTOR, 'div[role="listitem"]'): complete_matches,
+        }
+    )
+
+    containers = parser.wait_for_question_containers(driver)
+
+    assert containers == complete_matches
+
+
 def test_form_parser_finds_submit_button_by_aria_label():
     parser = FormParser(AppConfig(wait_timeout=1))
     submit_button = FakeElement(attributes={"aria-label": "Submit"})

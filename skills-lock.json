@@ -1,6 +1,16 @@
 {
   "version": 1,
   "skills": {
+    "coding-standards": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "574803faf98d8a698c2b2151d7ed211208bb084320d411bd3a0919e6b08e48f6"
+    },
+    "copilot-coding-agent": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "computedHash": "7e8325d7453ce2d9c2ceb9fbd8e844e8024757de999a1363984d8448aba1726a"
+    },
     "frontend-code-review": {
       "source": "langgenius/dify",
       "sourceType": "github",
@@ -15,6 +25,11 @@
       "source": "wshobson/agents",
       "sourceType": "github",
       "computedHash": "674861e37d6ca7ecdd58b910d7dd8d9703946739452d919403081b02d5607a65"
+    },
+    "senior-fullstack": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "computedHash": "ae5b8441fff529f9623d723252ca4578ec4f8ab978ff987b9f9d26c7f3daa19c"
     }
   }
 }
