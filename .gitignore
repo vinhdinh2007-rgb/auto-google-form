@@ -4,6 +4,8 @@
 _agents/
 _agent/
 .gemini/
+.local/
+.config/
 skills-lock.json
 
 # Tests & Coverage
