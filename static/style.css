@@ -401,6 +401,8 @@ body {
 .badge svg {
     color: var(--rose-500);
     flex-shrink: 0;
+    min-width: 20px;
+    min-height: 20px;
 }
 
 /* ── Card header ── */
@@ -733,6 +735,10 @@ body {
     font-size: 1.75rem;
     font-weight: 800;
     color: var(--rose-600);
+}
+
+.stat-card.mode-card strong {
+    font-size: 1.35rem;
 }
 
 .runtime {
