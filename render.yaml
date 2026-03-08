@@ -1,0 +1,20 @@
+# render.yaml — Render Blueprint (Infrastructure as Code)
+# Render reads this file to auto-configure your service.
+# Docs: https://docs.render.com/blueprint-spec
+
+services:
+  - type: web
+    name: autogg
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    repo: https://github.com/vinhdinh2007-rgb/auto-google-form
+    branch: main
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: AUTOGG_HOST
+        value: 0.0.0.0
+      - key: AUTOGG_PORT
+        value: 5000
+      - key: AUTOGG_HEADLESS
+        value: "true"

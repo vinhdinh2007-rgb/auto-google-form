@@ -1,99 +1,29 @@
-name: Docker Publish
+name: Deploy to Render
 
 on:
   push:
-    branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      force_no_cache:
-        description: Force a clean build without GitHub Actions cache
-        required: false
-        default: false
-        type: boolean
-
-permissions:
-  contents: read
 
 concurrency:
-  group: docker-publish-${{ github.ref }}
+  group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  docker:
+  deploy:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    env:
-      DOCKERHUB_REPO: ${{ vars.DOCKERHUB_REPO }}
+    timeout-minutes: 5
     steps:
-      - name: Validate DOCKERHUB_REPO format
-        id: validate
-        shell: bash
+      - name: Trigger Render Deploy
         run: |
-          if [ -z "${DOCKERHUB_REPO}" ]; then
-            echo "::error::DOCKERHUB_REPO must be set in repository variables (format: namespace/image)"
+          echo "🚀 Triggering Render deployment..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+
+          if [ "$response" = "200" ] || [ "$response" = "201" ]; then
+            echo "✅ Deploy triggered successfully! (HTTP $response)"
+            echo "Your app will be live at your Render URL in ~2-3 minutes."
+          else
+            echo "❌ Deploy trigger failed (HTTP $response)"
             exit 1
           fi
-
-          regex='^[a-z0-9]([a-z0-9_-]*[a-z0-9])?\/[a-z0-9]([a-z0-9._-]*[a-z0-9])?$'
-          if ! [[ "${DOCKERHUB_REPO}" =~ ${regex} ]]; then
-            echo "::error::DOCKERHUB_REPO must be in format namespace/image (lowercase)"
-            exit 1
-          fi
-
-          echo "dockerhub_repo=${DOCKERHUB_REPO}" >> "${GITHUB_OUTPUT}"
-          echo "dockerhub_username=${DOCKERHUB_REPO%%/*}" >> "${GITHUB_OUTPUT}"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ steps.validate.outputs.dockerhub_username }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.validate.outputs.dockerhub_repo }}
-          tags: |
-            type=sha,format=short,prefix=sha-
-            type=ref,event=branch,enable=${{ github.ref_type == 'branch' && github.event_name != 'pull_request' }}
-            type=ref,event=tag,enable=${{ github.ref_type == 'tag' && github.event_name != 'pull_request' }}
-            type=raw,value=latest,enable=${{ github.ref_type == 'branch' && github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request' }}
-
-      - name: Build and optionally push (cached)
-        if: github.event.inputs.force_no_cache != 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and optionally push (no cache)
-        if: github.event.inputs.force_no_cache == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          no-cache: true
