@@ -153,3 +153,6 @@ autogg/
 - Question detection is handled in `app/form_parser.py`
 - Submission orchestration is handled in `app/form_filler.py`
 - Random answer generation is handled in `app/strategy.py`
+
+## Testing Host with Render
+https://auto-google-form.onrender.com/
